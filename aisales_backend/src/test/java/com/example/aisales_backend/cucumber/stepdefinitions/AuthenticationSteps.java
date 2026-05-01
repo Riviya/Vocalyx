@@ -4,25 +4,23 @@ import com.example.aisales_backend.dto.LoginRequest;
 import com.example.aisales_backend.dto.PasswordResetRequest;
 import com.example.aisales_backend.dto.RegisterRequest;
 import com.example.aisales_backend.dto.UserResponse;
-import com.example.aisales_backend.repository.UserRepository;
-import com.example.aisales_backend.testconfig.TestDataBuilder;
+import com.example.aisales_backend.entity.User;
+import com.example.aisales_backend.entity.UserRole;
+import com.example.aisales_backend.repository.*;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthenticationSteps {
@@ -32,6 +30,33 @@ public class AuthenticationSteps {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SalesLogRepository salesLogRepository;
+
+    @Autowired
+    private NoteRepository notesRepository;
+
+    @Autowired
+    private CallRepository callRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private ContactRepository contactRepository;
+
+    @Autowired
+    private GoalRepository goalRepository;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
+    private RolePermissionRepository rolePermissionRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private Response response;
     private String jwtToken;
@@ -47,6 +72,15 @@ public class AuthenticationSteps {
 
     @Given("no users exist in the system")
     public void noUsersExistInTheSystem() {
+        // Delete in correct order to respect foreign key constraints
+        salesLogRepository.deleteAll();
+        notesRepository.deleteAll();
+        callRepository.deleteAll();
+        orderRepository.deleteAll();
+        contactRepository.deleteAll();
+        goalRepository.deleteAll();
+        passwordResetTokenRepository.deleteAll();
+        rolePermissionRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -91,24 +125,24 @@ public class AuthenticationSteps {
 
     @Given("a user exists with email {string} and password {string}")
     public void aUserExistsWithEmailAndPassword(String email, String password) {
-        // Register user - accept 201 (new user) or 400 (already exists)
-        RegisterRequest request = RegisterRequest.builder()
+        // Check if user already exists
+        if (userRepository.findByEmail(email).isPresent()) {
+            // User exists - update their password directly in DB
+            User user = userRepository.findByEmail(email).get();
+            user.setPassword(passwordEncoder.encode(password));
+            userRepository.save(user);
+            return;
+        }
+
+        // Create new user directly in database with encoded password
+        User user = User.builder()
                 .firstName("Test")
                 .lastName("User")
                 .email(email)
-                .password(password)
+                .password(passwordEncoder.encode(password))
+                .role(UserRole.ADMIN)
                 .build();
-
-        Response registrationResponse = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when()
-                .post("/users/register");
-
-        // Accept either 201 (new registration) or 400 (user already exists)
-        int statusCode = registrationResponse.statusCode();
-        assertTrue(statusCode == 201 || statusCode == 400,
-                "Expected status 201 or 400 but got: " + statusCode);
+        userRepository.save(user);
     }
 
     @When("I login with email {string} and password {string}")
@@ -138,7 +172,7 @@ public class AuthenticationSteps {
     public void iShouldReceiveAValidJWTToken() {
         assertNotNull(jwtToken);
         assertFalse(jwtToken.isEmpty());
-        assertTrue(jwtToken.startsWith("eyJ")); // JWT tokens start with eyJ
+        assertTrue(jwtToken.startsWith("eyJ"));
     }
 
     @When("I attempt to register with email {string}")
@@ -175,7 +209,6 @@ public class AuthenticationSteps {
 
     @Then("the login should fail")
     public void theLoginShouldFail() {
-        // Changed from 401 to 400 to match your application's behavior
         assertEquals(400, response.statusCode());
     }
 
@@ -211,13 +244,11 @@ public class AuthenticationSteps {
     @And("I should see validation errors")
     public void iShouldSeeValidationErrors() {
         assertEquals(400, response.statusCode());
-        // Validation errors return a map of field errors
         assertNotNull(response.body());
     }
 
     @Given("I am logged in as {string}")
     public void iAmLoggedInAs(String email) {
-        // Determine the correct password based on the email
         String password;
         switch (email) {
             case "reset@vocalyx.com":
