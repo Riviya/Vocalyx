@@ -78,7 +78,7 @@ const ComprehensiveAnalytics: React.FC = () => {
   const { token, user } = useAuth();
 
   const api: AxiosInstance = useMemo(() => {
-    const instance = axios.create({ baseURL: 'http://localhost:8080' });
+    const instance = axios.create({ baseURL: '/api' });
     instance.interceptors.request.use((config) => {
       if (token) {
         if (!config.headers) config.headers = {} as any;

@@ -72,7 +72,7 @@ const ChatBot = () => {
         setIsTyping(true);
 
         try {
-            const response = await fetch(`http://localhost:8080/api/chat/${orderId}/ask`, {
+            const response = await fetch(`/api/chat/${orderId}/ask`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

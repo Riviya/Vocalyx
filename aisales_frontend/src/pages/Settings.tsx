@@ -75,7 +75,7 @@ const Settings = () => {
     
     setIsLoadingUsers(true);
     try {
-      const res = await fetch('http://localhost:8080/api/users/workspace-users', {
+      const res = await fetch('/api/users/workspace-users', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -100,7 +100,7 @@ const Settings = () => {
     
     setIsLoadingRoles(true);
     try {
-      const res = await fetch('http://localhost:8080/api/users/roles', {
+      const res = await fetch('/api/users/roles', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -119,7 +119,7 @@ const Settings = () => {
     if (!email || !tempPassword) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch('http://localhost:8080/api/users/invite', {
+      const res = await fetch('/api/users/invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const Settings = () => {
         hasAccess
       }));
 
-      const res = await fetch('http://localhost:8080/api/users/roles', {
+      const res = await fetch('/api/users/roles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -200,7 +200,7 @@ const Settings = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:8080/api/users/${editingUser.id}`, {
+      const res = await fetch(`/api/users/${editingUser.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +230,7 @@ const Settings = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+      const res = await fetch(`/api/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

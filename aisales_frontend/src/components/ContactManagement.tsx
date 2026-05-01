@@ -109,7 +109,7 @@ const ContactManagement: React.FC<ContactManagementProps> = ({
     setIsLoading(true);
     try {
       const token = localStorage.getItem('finsight_token');
-      const response = await fetch('http://localhost:8080/api/contacts', {
+      const response = await fetch('/api/contacts', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -173,7 +173,7 @@ const ContactManagement: React.FC<ContactManagementProps> = ({
         companyName: newContact.companyName
       };
 
-      const contactResponse = await fetch('http://localhost:8080/api/contacts', {
+      const contactResponse = await fetch('/api/contacts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -262,7 +262,7 @@ const ContactManagement: React.FC<ContactManagementProps> = ({
         companyName: editingContact.companyName
       };
 
-      const response = await fetch(`http://localhost:8080/api/contacts/${editingContact.id}`, {
+      const response = await fetch(`/api/contacts/${editingContact.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -326,7 +326,7 @@ const ContactManagement: React.FC<ContactManagementProps> = ({
     try {
       const token = localStorage.getItem('finsight_token');
       
-      const response = await fetch(`http://localhost:8080/api/contacts/${contactId}`, {
+      const response = await fetch(`/api/contacts/${contactId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

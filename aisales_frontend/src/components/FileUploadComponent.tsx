@@ -85,7 +85,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
       console.log('Uploading file:', file.name, 'Type:', file.type, 'Size:', file.size);
       console.log('Token available:', !!token);
       
-      const response = await fetch('http://localhost:8080/api/upload/audio', {
+      const response = await fetch('/api/upload/audio', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

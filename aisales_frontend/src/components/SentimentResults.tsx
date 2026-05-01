@@ -161,7 +161,7 @@ const SentimentResults: React.FC<Props> = ({
       };
 
       const token = localStorage.getItem('finsight_token');
-      const callResponse = await fetch('http://localhost:8080/api/calls', {
+      const callResponse = await fetch('/api/calls', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -227,7 +227,7 @@ const SentimentResults: React.FC<Props> = ({
     const poll = async () => {
       try {
         const token = localStorage.getItem('finsight_token');
-        const response = await fetch(`http://localhost:8080/api/calls/${callId}`, {
+        const response = await fetch(`/api/calls/${callId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -370,7 +370,7 @@ const SentimentResults: React.FC<Props> = ({
       };
 
       const token = localStorage.getItem('finsight_token');
-      const response = await fetch('http://localhost:8080/api/sales-log', {
+      const response = await fetch('/api/sales-log', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

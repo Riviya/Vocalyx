@@ -41,7 +41,7 @@ const CallHistory = () => {
     useEffect(() => {
         const fetchCalls = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/calls/history', {
+                const response = await fetch('/api/calls/history', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'

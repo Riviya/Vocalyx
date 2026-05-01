@@ -1,0 +1,81 @@
+version: '3.9'
+
+networks:
+  vocalyx-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: vocalyx-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - vocalyx-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    ports:
+      - "3306:3306"  # Exposed for local inspection only — remove in production
+
+  backend:
+    build:
+      context: ./aisales_backend
+      dockerfile: Dockerfile
+    container_name: vocalyx-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS}
+      N8N_BASE_URL: ${N8N_BASE_URL}
+      N8N_WEBHOOK_PATH: ${N8N_WEBHOOK_PATH}
+      N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - vocalyx-net
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./aisales_frontend
+      dockerfile: Dockerfile
+    container_name: vocalyx-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - vocalyx-net
+    ports:
+      - "3000:80"

@@ -83,7 +83,7 @@ const CompanyManagement: React.FC<CompanyManagementProps> = ({
     setIsLoading(true);
     try {
       const token = localStorage.getItem('finsight_token');
-      const response = await fetch('http://localhost:8080/api/companies', {
+      const response = await fetch('/api/companies', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -129,7 +129,7 @@ const CompanyManagement: React.FC<CompanyManagementProps> = ({
 
     try {
       const token = localStorage.getItem('finsight_token');
-      const response = await fetch('http://localhost:8080/api/companies', {
+      const response = await fetch('/api/companies', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

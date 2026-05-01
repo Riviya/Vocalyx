@@ -30,7 +30,7 @@ const ResetPassword = () => {
     }
     setIsSubmitting(true);
     try {
-      const res = await fetch('http://localhost:8080/api/users/perform-reset', {
+      const res = await fetch('/api/users/perform-reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword, confirmPassword }),
