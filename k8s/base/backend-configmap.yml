@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: default
+data:
+  DB_HOST: "mysql"
+  DB_PORT: "3306"
+  DB_NAME: "vocalyx"
+  JPA_DDL_AUTO: "update"
+  JWT_EXPIRATION_MS: "86400000"
+  N8N_BASE_URL: "http://localhost:5678"
+  N8N_WEBHOOK_PATH: "/webhook/saleschat"
+  N8N_WEBHOOK_URL: "http://localhost:5678/webhook/5804a9a4-e172-482f-b9e0-064058ad7d86"
+  MAIL_HOST: "smtp.gmail.com"
+  MAIL_PORT: "587"
