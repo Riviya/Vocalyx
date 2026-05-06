@@ -1,0 +1,36 @@
+grafana:
+  adminPassword: "vocalyx-admin"
+
+  service:
+    type: NodePort
+    nodePort: 30030
+
+  # Pre-configure Loki as a datasource in Grafana
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      url: http://loki:3100
+      access: proxy
+      isDefault: false
+
+prometheus:
+  prometheusSpec:
+    # Scrape all pods that have prometheus annotations
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+    retention: 7d
+
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "300m"
+
+alertmanager:
+  enabled: false  # Not needed for this project scope
+
+nodeExporter:
+  enabled: true  # Exposes host-level CPU, memory, disk metrics
