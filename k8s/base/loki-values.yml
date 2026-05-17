@@ -1,3 +1,21 @@
+# loki:
+#   enabled: true
+#   persistence:
+#     enabled: false
+
+# promtail:
+#   enabled: true
+#   config:
+#     clients:
+#       - url: http://loki-stack:3100/loki/api/v1/push
+
+# grafana:
+#   enabled: false
+
+# prometheus:
+#   datasource:
+#     enabled: false
+
 loki:
   enabled: true
   persistence:
@@ -10,4 +28,13 @@ promtail:
       - url: http://loki-stack:3100/loki/api/v1/push
 
 grafana:
+  enabled: false
+  sidecar:
+    datasources:
+      enabled: false
+
+prometheus:
+  enabled: false
+
+prometheusRule:
   enabled: false
